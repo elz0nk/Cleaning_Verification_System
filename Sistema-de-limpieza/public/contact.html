@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html {
+            background: #2651a8;
+            box-sizing: border-box;
+        }
+
+        * {
+            box-sizing: inherit;
+        }
+
+        body {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            font-family: Calibri, Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1,
+        p {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 1em 0 .2em;
+        }
+
+        /* single-line text, checkbox, and button */
+        input,
+        select,
+        textarea {
+            display: block;
+            width: 100%;
+            padding: .3em;
+            font-size: 20px;
+            background-color: #fbfbfb;
+            border: solid 1px #CCC;
+            resize: vertical;
+        }
+
+        textarea {
+            min-height: 180px;
+        }
+
+        select {
+            color: indigo;
+        }
+
+        option {
+            color: black;
+            background: #2651a860;
+        }
+
+        input[type=checkbox] {
+            display: inline;
+            width: auto;
+            color: red;
+        }
+
+        input[type=submit] {
+            background: #2651a8;
+            margin: 1em 0 0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: all .3s ease-out;
+        }
+
+        input:focus,
+        input:hover,
+        select:focus,
+        select:hover,
+        textarea:focus,
+        textarea:hover {
+            background: #2674a87e;
+        }
+
+        /* hover and focus states */
+        input[type=submit]:hover,
+        input[type=submit]:focus {
+            background: #2674a8;
+            outline: none;
+        }
+
+        @media screen and (min-width:600px) {
+
+            /*  make the form 2 columns */
+            form:after {
+                content: '';
+                display: block;
+                clear: both;
+            }
+
+            .column {
+                width: 50%;
+                padding: 1em;
+                float: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <form id="contactForm">
+        <h1>Contact Us</h1>
+        <p>Please take a moment to get in touch, we will get back to you shortly.</p>
+
+        <div class="column">
+            <label for="the-name">Your Name</label>
+            <input type="text" name="name" id="the-name" placeholder="Name" required>
+
+            <label for="the-email">Email Address</label>
+            <input type="email" name="email" id="the-email" placeholder="Email" required>
+
+            <label for="the-phone">Phone Number</label>
+            <input type="tel" name="phone" id="the-phone" placeholder="Phone">
+
+            <label for="the-reason">How can we help you?</label>
+            <select name="reason" id="the-reason">
+                <option value="">Choose one</option>
+                <option value="question">Question</option>
+                <option value="help">Help</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        <div class="column">
+            <label for="the-message">Message</label>
+            <textarea name="message" id="the-message" placeholder="Message"></textarea>
+            <label>
+                <input type="checkbox" name="newsletter" value="yes"> Join our mailing list?
+            </label>
+            <input type="submit" value="Send Message">
+        </div>
+    </form>
+    <script>
+        const form = document.getElementById("contactForm");
+
+        fetch("/me").then(r => {
+            if (!r.ok) {
+                window.location.href = "/Signin/login.html";
+            }
+        });
+
+        form.addEventListener("submit", e => {
+            e.preventDefault();
+
+            const data = {
+                name: form.name.value,
+                email: form.email.value,
+                phone: form.phone.value,
+                reason: form.reason.value,
+                message: form.message.value,
+                newsletter: form.newsletter.checked
+            };
+
+            fetch("/contact", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+                .then(r => {
+                    if (!r.ok) throw new Error();
+                    alert("Message sent successfully");
+                    form.reset();
+                })
+                .catch(() => alert("Error sending message"));
+        });
+    </script>
+
+</body>
+
+</html>

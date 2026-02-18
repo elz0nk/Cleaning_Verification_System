@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Checklist de Casa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      padding-top: 40px;
+    }
+
+    .checklist {
+      background: white;
+      width: 400px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .add-item {
+      display: flex;
+      gap: 8px;
+    }
+
+    .add-item select {
+      flex: 1;
+      padding: 8px;
+    }
+
+    .add-item button {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f1f1f1;
+      padding: 8px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+    }
+
+    li.completed span {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    li span {
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .actions button {
+      cursor: pointer;
+      border: none;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+
+    .complete {
+      background: #4caf50;
+      color: white;
+    }
+
+    .edit {
+      background: #2196f3;
+      color: white;
+    }
+
+    .delete {
+      background: #f44336;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="checklist">
+    <h2>Checklist de Casa</h2>
+
+    <div class="add-item">
+      <select id="taskSelect">
+        <option value="">Selecciona una tarea...</option>
+        <option value="Revisar mensajes">Revisar mensajes</option>
+        <option value="Actualizar perfil">Actualizar perfil</option>
+        <option value="Limpiar la sala">Limpiar la sala</option>
+        <option value="Limpiar la cocina">Limpiar la cocina</option>
+        <option value="Revisar baño">Revisar baño</option>
+        <option value="Cambiar sábanas">Cambiar sábanas</option>
+      </select>
+      <button onclick="addTask()">Añadir</button>
+    </div>
+
+    <ul id="list"></ul>
+  </div>
+
+  <script>
+    const casaId = localStorage.getItem("casaActiva");
+    const list = document.getElementById("list");
+    const select = document.getElementById("taskSelect");
+
+    // Verificar sesión
+    fetch("/me")
+      .then(r => {
+        if (!r.ok) {
+          location.href = "/Signin/login.html";
+          throw new Error("No logueado");
+        }
+        return r.json();
+      })
+      .then(() => cargarChecklist());
+
+    function cargarChecklist() {
+      fetch(`/checklist/${casaId}`)
+        .then(r => r.json())
+        .then(tasks => tasks.forEach(renderTask));
+    }
+
+    function addTask() {
+      const texto = select.value;
+      if (!texto) return;
+
+      fetch(`/checklist/${casaId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texto })
+      })
+        .then(r => r.json())
+        .then(data => renderTask({ id: data.id, texto, completado: 0 }))
+        .catch(err => console.error(err));
+
+      select.value = "";
+    }
+
+    function renderTask(task) {
+      const li = document.createElement("li");
+      if (task.completado) li.classList.add("completed");
+
+      const span = document.createElement("span");
+      span.textContent = task.texto;
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const completeBtn = document.createElement("button");
+      completeBtn.textContent = "Done";
+      completeBtn.className = "complete";
+      completeBtn.onclick = () => {
+        const estado = li.classList.toggle("completed") ? 1 : 0;
+        fetch(`/checklist/${task.id}/completado`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ completado: estado })
+        });
+      };
+
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "Edit";
+      editBtn.className = "edit";
+      editBtn.onclick = () => {
+        const opciones = [
+          "Revisar mensajes",
+          "Actualizar perfil",
+          "Limpiar la sala",
+          "Limpiar la cocina",
+          "Revisar baño",
+          "Cambiar sábanas"
+        ];
+
+        const selectEdit = document.createElement("select");
+        const defaultOption = document.createElement("option");
+        defaultOption.textContent = "Selecciona nueva tarea...";
+        defaultOption.value = "";
+        selectEdit.appendChild(defaultOption);
+
+        opciones.forEach(op => {
+          const option = document.createElement("option");
+          option.value = op;
+          option.textContent = op;
+          if (op === span.textContent) option.selected = true;
+          selectEdit.appendChild(option);
+        });
+
+        li.replaceChild(selectEdit, span);
+        selectEdit.focus();
+
+        selectEdit.onchange = () => {
+          const nuevo = selectEdit.value;
+          if (!nuevo) return;
+          span.textContent = nuevo;
+
+          fetch(`/checklist/${task.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texto: nuevo })
+          });
+
+          li.replaceChild(span, selectEdit);
+        };
+      };
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Delete";
+      deleteBtn.className = "delete";
+      deleteBtn.onclick = () => {
+        fetch(`/checklist/${task.id}`, { method: "DELETE" });
+        li.remove();
+      };
+
+      actions.append(completeBtn, editBtn, deleteBtn);
+      li.append(span, actions);
+      list.appendChild(li);
+    }
+  </script>
+
+</body>
+
+</html>

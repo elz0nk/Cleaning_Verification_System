@@ -1,0 +1,43 @@
+<h2>Verificación</h2>
+
+<div id="grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;"></div>
+
+<script>
+const casaId = localStorage.getItem("casaActiva");
+const grid = document.getElementById("grid");
+
+fetch(`/checklist/${casaId}`)
+  .then(r => r.json())
+  .then(tasks => tasks.forEach(renderCard));
+
+function renderCard(task) {
+  const div = document.createElement("div");
+  div.style.border="1px solid #ccc";
+  div.style.padding="10px";
+
+  const title = document.createElement("p");
+  title.textContent = task.texto;
+
+  const btn = document.createElement("button");
+
+  if(task.completado){
+    btn.textContent="Verified";
+    btn.disabled=true;
+  } else {
+    btn.textContent="Verify";
+    btn.onclick = () => {
+      fetch(`/checklist/${task.id}/completado`,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ completado:1 })
+      }).then(()=>{
+        btn.textContent="Verified";
+        btn.disabled=true;
+      });
+    };
+  }
+
+  div.append(title,btn);
+  grid.appendChild(div);
+}
+</script>

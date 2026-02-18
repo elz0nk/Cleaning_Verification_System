@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Checklist</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        .checklist {
+            background: white;
+            width: 400px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .add-item {
+            display: flex;
+            gap: 8px;
+        }
+
+        .add-item select {
+            flex: 1;
+            padding: 8px;
+        }
+
+        .add-item button {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f1f1f1;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+        }
+
+        li.completed span {
+            text-decoration: line-through;
+            color: gray;
+        }
+
+        li span {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .actions button {
+            cursor: pointer;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 4px;
+        }
+
+        .complete {
+            background: #4caf50;
+            color: white;
+        }
+
+        .edit {
+            background: #2196f3;
+            color: white;
+        }
+
+        .delete {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="checklist">
+        <h2>Checklist</h2>
+
+        <div class="add-item">
+            <select id="itemSelect">
+                <option value="">Select a Task...</option>
+                <option value="Tidy up the Living Room">Tidy up the Living Room</option>
+                <option value="Tidy up the Kitchen">Tidy up the Kitchen</option>
+                <option value="Tidy up the Bathroom">Tidy up the Bathroom</option>
+                <option value="Resupply Paper Rolls">Resupply Paper Rolls</option>
+                <option value="Resupply Towels">Resupply Towels</option>
+                <option value="Tidy up the Bedroom">Tidy up the Bedroom</option>
+                <option value="Make the Bed">Make the Bed</option>
+                <option value="Tidy up the Terrace">Tidy up the Terrace</option>
+                <option value="Tidy up the Office">Tidy up the Office</option>
+            </select>
+            <button onclick="addItem()">Add</button>
+        </div>
+
+        <ul id="list"></ul>
+    </div>
+
+    <script>
+        const list = document.getElementById("list");
+        const select = document.getElementById("itemSelect");
+
+        fetch("/me")
+            .then(r => {
+                if (!r.ok) {
+                    location.href = "/Signin/login.html";
+                    throw new Error("No logueado");
+                }
+                return r.json();
+            })
+            .then(() => {
+                fetch("/checklist")
+                    .then(r => {
+                        if (!r.ok) throw new Error("No se pudo cargar checklist");
+                        return r.json();
+                    })
+                    .then(items => items.forEach(renderItem));
+            });
+
+        // ➕ Añadir item desde select
+        function addItem() {
+            const text = select.value;
+            if (!text) return;
+
+            fetch("/checklist", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ texto: text })
+            })
+                .then(r => {
+                    if (!r.ok) throw new Error("Error al añadir item");
+                    return r.json();
+                })
+                .then(data => {
+                    renderItem({
+                        id: data.id,
+                        texto: text,
+                        completado: 0
+                    });
+                    select.value = "";
+                })
+                .catch(err => console.error(err));
+        }
+
+        function renderItem(item) {
+            const li = document.createElement("li");
+            if (item.completado) li.classList.add("completed");
+
+            const span = document.createElement("span");
+            span.textContent = item.texto;
+
+            const actions = document.createElement("div");
+            actions.className = "actions";
+
+            // Completar
+            const completeBtn = document.createElement("button");
+            completeBtn.textContent = "Done";
+            completeBtn.className = "complete";
+            completeBtn.onclick = () => {
+                const estado = li.classList.toggle("completed") ? 1 : 0;
+                fetch(`/checklist/${item.id}/completado`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ completado: estado })
+                });
+            };
+
+            const editBtn = document.createElement("button");
+            editBtn.textContent = "Edit";
+            editBtn.className = "edit";
+            editBtn.onclick = () => {
+
+                // Lista de opciones disponibles
+                const opciones = [
+                    "Tidy up the Living Room",
+                    "Tidy up the Kitchen",
+                    "Tidy up the Bathroom",
+                    "Resupply Paper Rolls",
+                    "Resupply Towels",
+                    "Tidy up the Bedroom",
+                    "Make the Bed",
+                    "Tidy up the Terrace",
+                    "Tidy up the Office"
+                    
+                ];
+
+                const selectEdit = document.createElement("select");
+
+                // Opción por defecto
+                const defaultOption = document.createElement("option");
+                defaultOption.textContent = "Selecciona nueva tarea...";
+                defaultOption.value = "";
+                selectEdit.appendChild(defaultOption);
+
+                opciones.forEach(op => {
+                    const option = document.createElement("option");
+                    option.value = op;
+                    option.textContent = op;
+
+                    // Seleccionar automáticamente la actual
+                    if (op === span.textContent) {
+                        option.selected = true;
+                    }
+
+                    selectEdit.appendChild(option);
+                });
+
+                // Reemplazar texto por select
+                li.replaceChild(selectEdit, span);
+
+                selectEdit.focus();
+
+                selectEdit.onchange = () => {
+                    const nuevo = selectEdit.value;
+                    if (!nuevo) return;
+
+                    span.textContent = nuevo;
+
+                    fetch(`/checklist/${item.id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ texto: nuevo })
+                    });
+
+                    li.replaceChild(span, selectEdit);
+                };
+            };
+
+
+            // Eliminar
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.className = "delete";
+            deleteBtn.onclick = () => {
+                fetch(`/checklist/${item.id}`, { method: "DELETE" });
+                li.remove();
+            };
+
+            actions.append(completeBtn, editBtn, deleteBtn);
+            li.append(span, actions);
+            list.appendChild(li);
+        }
+    </script>
+
+</body>
+
+</html>

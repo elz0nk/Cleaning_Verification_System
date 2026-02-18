@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mis Casas</title>
+</head>
+<body>
+
+<h2>Mis Casas</h2>
+
+<input id="nombre" placeholder="Nombre casa">
+<input id="direccion" placeholder="Dirección">
+<button onclick="crearCasa()">Crear</button>
+
+<ul id="lista"></ul>
+
+<script>
+const lista = document.getElementById("lista");
+
+fetch("/casas")
+  .then(r => r.json())
+  .then(casas => casas.forEach(renderCasa));
+
+function crearCasa() {
+  const nombre = document.getElementById("nombre").value;
+  const direccion = document.getElementById("direccion").value;
+
+  fetch("/casas", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ nombre, direccion })
+  })
+  .then(r => {
+    if(!r.ok) return alert("Límite alcanzado");
+    return r.json();
+  })
+  .then(data => {
+    renderCasa({ id: data.id, nombre, direccion });
+  });
+}
+
+function renderCasa(casa) {
+  const li = document.createElement("li");
+  li.textContent = `${casa.nombre} - ${casa.direccion}`;
+  li.onclick = () => {
+    localStorage.setItem("casaActiva", casa.id);
+    location.href = "/checklist.html";
+  };
+  lista.appendChild(li);
+}
+</script>
+
+</body>
+</html>

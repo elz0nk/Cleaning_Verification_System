@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin – Messages</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .item { border-bottom: 1px solid #ccc; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+<h1>Contact Forms</h1>
+<div id="list"></div>
+
+<script>
+fetch("/admin/contact")
+  .then(r => {
+    if (r.status === 401) location.href = "/Signin/login.html";
+    if (r.status === 403) alert("Access denied");
+    return r.json();
+  })
+  .then(data => {
+    const list = document.getElementById("list");
+    data.forEach(f => {
+      list.innerHTML += `
+        <div class="item">
+          <b>${f.name}</b> (${f.email})<br>
+          User: ${f.usuario}<br>
+          Reason: ${f.reason}<br>
+          ${f.message}<br>
+          <small>${f.fecha}</small>
+        </div>
+      `;
+    });
+  });
+</script>
+
+</body>
+</html>

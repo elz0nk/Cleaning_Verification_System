@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogIn / SignIn</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="main">
+    <input type="checkbox" id="chk" aria-hidden="true">
+
+    <div class="signup">
+      <form onsubmit="registrar(event)">
+        <label for="chk" aria-hidden="true">Sign up</label>
+
+        <input id="su_user" type="text" placeholder="User name" required>
+        <input id="su_email" type="email" placeholder="Email" required>
+        <input id="su_pass1" type="password" placeholder="Password" required>
+        <input id="su_pass2" type="password" placeholder="Reenter Password" required>
+
+        <button type="submit">Sign up</button>
+      </form>
+    </div>
+    
+    <div class="login">
+      <form onsubmit="login(event)">
+        <label for="chk" aria-hidden="true">Login</label>
+        
+        <input id="li_email" type="email" placeholder="Email" required>
+        <input id="li_pass" type="password" placeholder="Password" required>
+
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+</html>

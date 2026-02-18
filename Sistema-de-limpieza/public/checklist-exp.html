@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Task Management System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    header {
+      background: #2651a8;
+      color: white;
+      padding: 30px 20px 40px;
+      position: relative;
+      text-align: center;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: white;
+      color: #2651a8;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #e6ecfa;
+      color: #1f3f86;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.4em;
+    }
+
+    header p {
+      margin-top: 10px;
+      font-size: 1.1em;
+      opacity: 0.95;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 50px auto;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    section {
+      margin-bottom: 50px;
+    }
+
+    h2 {
+      color: #2651a8;
+      padding-bottom: 10px;
+      font-size: 1.6em;
+    }
+
+    p {
+      margin: 14px 0;
+      font-size: 1.05em;
+    }
+
+    ul {
+      padding-left: 22px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .highlight {
+      background: #e7f3ff;
+      padding: 20px;
+      border-left: 5px solid #2651a8;
+      margin: 25px 0;
+      border-radius: 6px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #777;
+      font-size: 0.9em;
+    }
+
+    #copyright {
+      overflow: hidden;
+      padding: 5em 0em;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      background-color: black;
+    }
+
+    #copyright p {
+      text-align: center;
+      font-size: 1em;
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    #copyright a {
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.6);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a href="/home.html" class="back-btn">Return</a>
+
+    <h1>Smart Task Management</h1>
+    <p>Organize, track, and complete your work efficiently</p>
+  </header>
+
+  <main>
+
+    <section>
+      <h2>Purpose-Built Task Management</h2>
+      <p>
+        The Task Manager is designed to help users organize their daily activities in a clear, structured, and efficient
+        way.
+        It transforms simple task lists into a reliable productivity tool.
+      </p>
+      <p>
+        Each user has access to a private task list, ensuring focus and personal accountability.
+      </p>
+    </section>
+
+    <section>
+      <h2>Personalized Task Lists</h2>
+      <p>
+        Every task is linked to the logged-in user, creating a personalized workspace.
+        Tasks are visible only to their owner and remain available across sessions.
+      </p>
+
+      <div class="highlight">
+        <strong>User-focused design:</strong><br>
+        Tasks are automatically loaded when the user accesses the system, providing continuity and consistency.
+      </div>
+    </section>
+
+    <section>
+      <h2>Create, Edit, and Delete Tasks</h2>
+      <p>
+        The system offers full control over task management, allowing users to adapt their lists as priorities change.
+      </p>
+      <ul>
+        <li>Create new tasks instantly.</li>
+        <li>Edit task descriptions at any time.</li>
+        <li>Remove tasks that are no longer relevant.</li>
+      </ul>
+      <p>
+        All changes are saved automatically, ensuring that no progress is lost.
+      </p>
+    </section>
+
+    <section>
+      <h2>Track Task Completion</h2>
+      <p>
+        Tasks can be marked as completed, providing a clear overview of progress.
+        Completed tasks are visually distinguished, making it easy to track achievements.
+      </p>
+      <ul>
+        <li>Clear visual feedback for completed tasks.</li>
+        <li>Improved focus on pending activities.</li>
+        <li>Enhanced sense of progress and productivity.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Persistent and Reliable Storage</h2>
+      <p>
+        All tasks are securely stored in the database.
+        Users can safely close the application or refresh the page without losing data.
+      </p>
+      <p>
+        This persistence ensures that task lists remain accurate and accessible at all times.
+      </p>
+    </section>
+
+    <section>
+      <h2>Security and Access Control</h2>
+      <p>
+        Access to the Task Manager is restricted to authenticated users.
+        This guarantees that task data remains private and protected.
+      </p>
+      <ul>
+        <li>User-specific task isolation.</li>
+        <li>Secure session-based access.</li>
+        <li>Controlled data modification.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <div id="copyright" class="container">
+    <p>&copy; Sercom. All rights reserved. | <a href="http://Instagram.com/">Instagram</a> | <a
+        href="http://Facebook.com/">Facebook</a> | <a href="http://Whatsapp.com/">Whatsapp</a></p>
+  </div>
+
+</body>
+
+</html>
